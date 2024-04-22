@@ -1,10 +1,21 @@
-node_modules/
-.pnpm-store/
-dist/
-.vscode/ltex*
+# Artifacts
 out/
+dist/
+*.vsix
+
+# Project
 test/balena-nodejs-hello-world
 *.img
 *.secret
-*.vsix
+
+# Node
+node_modules/
+.pnpm-store/
+.vscode/ltex*
+
+# Nix
+.direnv
+**/result
+
+# OS
 .DS_Store

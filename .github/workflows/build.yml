@@ -1,0 +1,31 @@
+on:
+  workflow_call:
+    inputs:
+      prerelease:
+        type: boolean
+
+env:
+  VSCE_PAT: ${{ secrets.VSCE_PAT }}
+  OVSX_PAT: ${{ secrets.OVSX_PAT }}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: DeterminateSystems/nix-installer-action@main
+
+    - name: Setup Cache - Nix Store
+      uses: nix-community/cache-nix-action@v5
+      with:
+        primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix', '**/*.ts', '!test-util/') }}
+        restore-prefixes-first-match: nix-${{ runner.os }}-
+    
+    - name: Publish
+      run: |
+        if [ ${{ inputs.prerelease }} == true ]; then
+          nix run .#publish-release
+        else
+          nix run .#publish-prerelease
+        fi

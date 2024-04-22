@@ -1,0 +1,17 @@
+name: Build and Publish Pre-release
+on:
+  push:
+    tags:
+      # If tagged and is an odd semver, create Pre-release package
+      # https://code.visualstudio.com/api/working-with-extensions/publishing-extension#prerelease-extensions
+      - 'v0.[13579]+.[0-9]+'
+      - 'v[13579]+.[0-9]+.[0-9]+'
+    branches:
+      - kpace/feat/nixify-ci
+
+jobs:
+  pre-release:
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+    with:
+      prerelease: true

@@ -32,7 +32,7 @@ export function BalenaSdkPolyfillPlugin(options?: {
 
             // https://github.com/balena-io-modules/pinejs-client-js/blob/52f3a97dc2b5aba07090a688fcd7afa2d2d789d8/index.js#L5
             build.onResolve({ filter: /^pinejs-client-core$/ }, async () => {
-                const result = await build.resolve('pinejs-client-core/es2018', { resolveDir: './node_modules/' });
+                const result = await build.resolve('pinejs-client-core/es2018', { resolveDir: './node_modules/.pnpm' });
                 if (result.errors.length > 0) {
                     return { errors: result.errors };
                 }

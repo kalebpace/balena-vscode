@@ -1,0 +1,13 @@
+name: Build and Publish Release
+on:
+  push:
+    tags:
+      # If tagged and is an even semver, create Release package
+      # https://code.visualstudio.com/api/working-with-extensions/publishing-extension#prerelease-extensions
+      - 'v0.[02468]+.[0-9]+'
+      - 'v[2468]+.[0-9]+.[0-9]+'
+
+jobs:
+  release:
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
