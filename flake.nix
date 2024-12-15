@@ -29,23 +29,25 @@
 
           vsix = with pkgs; stdenv.mkDerivation (finalAttrs: rec { 
             name = "vsix";
+            version = "0.0.0";
             src = ./.;
-            prerelease = false;
-            pnpmPackage = with pkgs; mkPnpmPackage {
-              inherit src;
-              script = if finalAttrs.prerelease == true then "build-dev" else "build-prod";
-            };
             buildInputs = [ nodePackages.pnpm ];
             buildPhase = ''
               cp -r ${pnpmPackage} ./dist
               ln -s ${pnpmPackage.passthru.nodeModules}/node_modules node_modules
               pnpm install
-              pnpm exec vsce package --no-dependencies ${lib.strings.optionalString finalAttrs.prerelease "--pre-release"}
+              pnpm exec vsce package ${finalAttrs.version} --no-dependencies ${lib.strings.optionalString finalAttrs.prerelease "--pre-release"}
             '';
             installPhase = ''
               mkdir -p $out
               cp -r ./balena-vscode-*.vsix $out
             '';
+
+            prerelease = false;
+            pnpmPackage = with pkgs; mkPnpmPackage {
+              inherit src version;
+              script = if finalAttrs.prerelease == true then "build-dev" else "build-prod";
+            };
           });
           
           prod = vsix.overrideAttrs { prerelease = false; };
@@ -67,8 +69,8 @@
             type = "app";
             program = toString (pkgs.writers.writeBash "publish-prerelease" ''
               ${nodePackages.pnpm}/bin/pnpm install
-              ${nodePackages.pnpm}/bin/pnpm exec vsce publish --packagePath ${packages.vsix.overrideAttrs ({ prerelease = true; })}/balena-vscode-*.vsix
-              ${nodePackages.pnpm}/bin/pnpm exec ovsx publish --packagePath ${packages.vsix.overrideAttrs ({ prerelease = true; })}/balena-vscode-*.vsix
+              ${nodePackages.pnpm}/bin/pnpm exec vsce publish --packagePath ${packages.vsix.overrideAttrs { prerelease = true; }}/balena-vscode-*.vsix
+              ${nodePackages.pnpm}/bin/pnpm exec ovsx publish --packagePath ${packages.vsix.overrideAttrs { prerelease = true; }}/balena-vscode-*.vsix
             '');
           };
         };
